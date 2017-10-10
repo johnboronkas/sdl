@@ -8,25 +8,22 @@ using namespace std;
 const int SCREEN_WIDTH = 640;
 const int SCREEN_HEIGHT = 480;
 
-FILE* debug;
-FILE* error;
+FILE* log;
 
 void quit(SDL_Window* window) {
-    fclose(debug);
-    fclose(error);
+    fclose(log);
     SDL_DestroyWindow(window);
     SDL_Quit();
 }
 
 int main(int argc, char* args[]) {
-    debug = freopen ("debug.log", "wb", stdout);
-    error = freopen ("error.log", "wb", stderr);
+    log = freopen ("log.log", "wb", stdout);
 
     SDL_Window* window = NULL;
     SDL_Surface* screenSurface = NULL;
 
     if (SDL_Init(SDL_INIT_VIDEO) < 0) {
-        fprintf(stderr, "SDL could not initialize! SDL_Error: %s\n", SDL_GetError());
+        printf("ERROR: SDL could not initialize! SDL_Error: %s\n", SDL_GetError());
         quit(window);
         return -20;
     }
@@ -39,7 +36,7 @@ int main(int argc, char* args[]) {
                               ,SDL_WINDOW_SHOWN);
 
     if (window == NULL) {
-        fprintf(stderr, "Window could not be created! SDL_Error: %s\n", SDL_GetError());
+        printf("ERROR: Window could not be created! SDL_Error: %s\n", SDL_GetError());
         quit(window);
         return -30;
     }
