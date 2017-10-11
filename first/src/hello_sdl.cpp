@@ -9,12 +9,22 @@ const int SCREEN_HEIGHT = 480;
 
 SDL_Window* window = NULL;
 SDL_Surface* screenSurface = NULL;
+SDL_Surface* workerSurface = NULL;
 
 FILE* log;
 
 void quit() {
     fclose(log);
+
+    SDL_FreeSurface(workerSurface);
+    workerSurface = NULL;
+
+    SDL_FreeSurface(screenSurface);
+    screenSurface = NULL;
+
     SDL_DestroyWindow(window);
+    window = NULL;
+
     SDL_Quit();
 }
 
@@ -39,15 +49,34 @@ bool init() {
     }
 
     screenSurface = SDL_GetWindowSurface(window);
-    printf("Test2");
+    return true;
+}
+
+bool loadMedia() {
+    workerSurface = SDL_LoadBMP("res/img/worker.bmp");
+    if (workerSurface == NULL) {
+        printf("ERROR: Failed to load image %s! SDL_Error: %s\n", "worker.bmp", SDL_GetError());
+        return false;
+    }
+
     return true;
 }
 
 int main(int argc, char* args[]) {
     log = freopen ("log.log", "wb", stdout);
-    init();
 
-    SDL_FillRect(screenSurface, NULL, SDL_MapRGB(screenSurface->format, 0xFF, 0xFF, 0xFF));
+    if (!init()) {
+        printf("ERROR: Failed to initialize!\n");
+        return -10;
+    }
+    
+    if (!loadMedia()) {
+        printf("ERROR: Failed to load media!\n");
+        return -20;
+    }
+
+    SDL_FillRect(screenSurface, NULL, SDL_MapRGB(screenSurface->format, 0x23, 0x23, 0x23));
+    SDL_BlitSurface(workerSurface, NULL, screenSurface, NULL);
     SDL_UpdateWindowSurface(window);
 
     SDL_Delay(2000);
